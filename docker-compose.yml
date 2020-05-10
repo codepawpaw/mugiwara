@@ -1,0 +1,29 @@
+version: '3.1'
+
+services:
+  web:
+    build: .
+    restart: always
+    links:
+      - mysql
+      - redis
+    ports:
+      - 8000:8000
+    environment:
+      DB_PORT: 3306
+      DB_HOST: mysql
+      DB_NAME: church-rundown
+      DB_PASS: 12345
+  mysql:
+    build: ./docker/mysql
+    ports:
+      - 3307:3306
+    environment:
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: 12345
+      MYSQL_ROOT_PASSWORD: 12345
+      MYSQL_DATABASE: church-rundown
+  redis:
+    image: redis
+    ports:
+      - '6379:6379'

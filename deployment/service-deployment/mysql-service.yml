@@ -1,0 +1,19 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: mysql-app-service
+  namespace: default
+  labels:
+    app: mysql-service
+spec:
+  ports:
+    - protocol: TCP
+      port: 8000
+      targetPort: 3000
+  selector:
+    app: mysql-service
+  type: LoadBalancer
+  sessionAffinity: None
+  externalTrafficPolicy: Cluster
+status:
+  loadBalancer: {}

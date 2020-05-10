@@ -1,0 +1,24 @@
+kind: Deployment
+apiVersion: extensions/v1beta1
+metadata:
+  name: kubernetes-deployment
+  namespace: default
+  labels:
+    app: app-service
+spec:
+  replicas: 1
+  selector:
+     matchLabels:
+        app: app-service
+  template:
+    metadata:
+      labels:
+        app: app-service
+    spec:
+      containers:
+        - name: app-service-container
+          image: church-rundown_web
+          resources: {}
+          imagePullPolicy: IfNotPresent
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30

@@ -1,0 +1,19 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: web-app-service
+  namespace: default
+  labels:
+    app: app-service
+spec:
+  ports:
+    - protocol: TCP
+      port: 8000
+      targetPort: 3000
+  selector:
+    app: app-service
+  type: LoadBalancer
+  sessionAffinity: None
+  externalTrafficPolicy: Cluster
+status:
+  loadBalancer: {}
