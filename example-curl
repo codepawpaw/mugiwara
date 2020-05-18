@@ -13,4 +13,9 @@ curl --header "Content-Type: application/json" \
   --data '{"cityName":"Jakarta","province":"DKI Jakarta","nation":"Indonesia","description":"No desc","date":"2020-05-08T09:38:22.105Z","lat":"123","lang":"123","userId":1}' \
   http://localhost:8000/v1/incident
 
-  curl -H "Content-Type: application/json" -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXIzIn0.tX8OLfGxv14ET_OwjP4e2TTwp5xDxqQJ9fAo7NJaiSk" http://localhost:8000/v1/incident/Jakarta
+    curl -H "Content-Type: application/json" -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXIzIn0.tX8OLfGxv14ET_OwjP4e2TTwp5xDxqQJ9fAo7NJaiSk" \
+  --request POST \
+  --data '{"cityName":"jakarta","province":"DKI Jakarta","nation":"Indonesia","description":"No desc","date":"2020-05-08T09:38:22.105Z","lat":"123","lang":"123","userId":1}' \
+  http://localhost:8000/v1/incident
+
+  curl -H "Content-Type: application/json" -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXIzIn0.tX8OLfGxv14ET_OwjP4e2TTwp5xDxqQJ9fAo7NJaiSk" http://localhost:8000/v1/incident/jakarta

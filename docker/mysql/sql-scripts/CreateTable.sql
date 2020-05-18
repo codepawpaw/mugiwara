@@ -24,7 +24,7 @@ CREATE TABLE incidents (
     lang varchar(300) NOT NULL,
     user_id int NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users(id)
-)
+);
 
 INSERT INTO users(name, age, sex) values('user1', '21', 'male');
 INSERT INTO accounts(username, password, user_id) values('username123', 'pidel123', 1);
