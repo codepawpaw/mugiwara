@@ -3,22 +3,13 @@ package repsitory
 import (
 	"context"
 
-	dto "../dto"
 	models "../models"
 )
 
-type UserRepository interface {
-	GetByID(ctx context.Context, id int64) (*models.User, error)
-}
-
-type AccountRepository interface {
-	GetByID(ctx context.Context, id int64) (*models.Account, error)
-	GetByUsernameAndPassword(ctx context.Context, username string, password string) (*models.Account, error)
-}
-
 type AuthRepository interface {
-	Create(ctx context.Context, user *models.User, account *models.Account) (dto.Auth, error)
-	Update(ctx context.Context, user *models.User, account *models.Account) (dto.Auth, error)
+	Create(ctx context.Context, user *models.User) (*models.User, error)
+	Update(ctx context.Context, user *models.User) (*models.User, error)
+	GetByEmail(ctx context.Context, email string) ([]*models.User, error)
 }
 
 type IncidentRepository interface {

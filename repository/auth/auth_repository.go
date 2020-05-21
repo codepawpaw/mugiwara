@@ -3,9 +3,7 @@ package auth
 import (
 	"context"
 	"database/sql"
-	"fmt"
 
-	dto "../../dto"
 	models "../../models"
 	pRepo "../../repository"
 )
@@ -20,13 +18,43 @@ type AuthRepository struct {
 	Connection *sql.DB
 }
 
-func (o *AuthRepository) Create(ctx context.Context, user *models.User, account *models.Account) (dto.Auth, error) {
-	userQuery := "Insert users SET name=?, age=?, sex=?"
-	accountQuery := "Insert accounts SET username=?, password=?, user_id=?"
+func (o *AuthRepository) fetch(ctx context.Context, query string, args ...interface{}) ([]*models.User, error) {
+	rows, err := o.Connection.QueryContext(ctx, query, args...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	payload := make([]*models.User, 0)
+	for rows.Next() {
+		data := new(models.User)
+
+		err := rows.Scan(
+			&data.ID,
+			&data.Name,
+			&data.DisplayName,
+			&data.Email,
+			&data.IdToken,
+			&data.PhotoUrl,
+		)
+		if err != nil {
+			return nil, err
+		}
+		payload = append(payload, data)
+	}
+	return payload, nil
+}
+
+func (m *AuthRepository) GetByEmail(ctx context.Context, email string) ([]*models.User, error) {
+	query := "Select * From users where email=?"
+
+	return m.fetch(ctx, query, email)
+}
+
+func (o *AuthRepository) Create(ctx context.Context, user *models.User) (*models.User, error) {
+	userQuery := "Insert users SET name=?, displayName=?, email=?, idToken=?, photoUrl=?"
 
 	tx, _ := o.Connection.Begin()
-
-	emptyAuthResponse := dto.Auth{}
 
 	// ===========
 
@@ -34,57 +62,29 @@ func (o *AuthRepository) Create(ctx context.Context, user *models.User, account 
 	if err != nil {
 		tx.Rollback()
 
-		return emptyAuthResponse, err
+		return &models.User{}, err
 	}
 
-	userResponse, err := userStatement.ExecContext(ctx, user.Name, user.Age, user.Sex)
+	userResponse, err := userStatement.ExecContext(ctx, user.Name, user.DisplayName, user.Email, user.IdToken, user.PhotoUrl)
 	defer userStatement.Close()
 	if err != nil {
 		tx.Rollback()
 
-		return emptyAuthResponse, err
-	}
-
-	// ===========
-
-	accountStatement, err := tx.PrepareContext(ctx, accountQuery)
-	if err != nil {
-		tx.Rollback()
-
-		return emptyAuthResponse, err
+		return &models.User{}, err
 	}
 
 	userID, _ := userResponse.LastInsertId()
 	user.ID = userID
-	accountResponse, err := accountStatement.ExecContext(ctx, account.Username, account.Password, userID)
-	defer accountStatement.Close()
-
-	if err != nil {
-		tx.Rollback()
-
-		return emptyAuthResponse, err
-	}
-
-	accountID, _ := accountResponse.LastInsertId()
-	account.ID = accountID
 
 	tx.Commit()
 
-	authResponse := dto.Auth{
-		Account: account,
-		User:    user,
-	}
-
-	return authResponse, err
+	return user, err
 }
 
-func (o *AuthRepository) Update(ctx context.Context, user *models.User, account *models.Account) (dto.Auth, error) {
-	userQuery := "Update users SET name=?, age=?, sex=? Where id=?"
-	accountQuery := "Update accounts SET username=?, password=? Where id=?"
+func (o *AuthRepository) Update(ctx context.Context, user *models.User) (*models.User, error) {
+	userQuery := "Update users SET name=?, displayName=?, email=?, idToken=?, photoUrl=? Where email=?"
 
 	tx, _ := o.Connection.Begin()
-
-	emptyAuthResponse := dto.Auth{}
 
 	// ===========
 
@@ -92,45 +92,18 @@ func (o *AuthRepository) Update(ctx context.Context, user *models.User, account 
 	if err != nil {
 		tx.Rollback()
 
-		return emptyAuthResponse, err
+		return &models.User{}, err
 	}
 
-	userResponse, err := userStatement.ExecContext(ctx, user.Name, user.Age, user.Sex, user.ID)
+	_, err = userStatement.ExecContext(ctx, user.Name, user.DisplayName, user.Email, user.IdToken, user.PhotoUrl)
 	defer userStatement.Close()
 	if err != nil {
 		tx.Rollback()
 
-		return emptyAuthResponse, err
+		return &models.User{}, err
 	}
-
-	// ===========
-
-	accountStatement, err := tx.PrepareContext(ctx, accountQuery)
-	if err != nil {
-		tx.Rollback()
-
-		return emptyAuthResponse, err
-	}
-
-	fmt.Println(userResponse)
-
-	accountResponse, err := accountStatement.ExecContext(ctx, account.Username, account.Password, account.ID)
-	defer accountStatement.Close()
-
-	if err != nil {
-		tx.Rollback()
-
-		return emptyAuthResponse, err
-	}
-
-	fmt.Println(accountResponse)
 
 	tx.Commit()
 
-	authResponse := dto.Auth{
-		Account: account,
-		User:    user,
-	}
-
-	return authResponse, err
+	return user, err
 }

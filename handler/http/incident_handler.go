@@ -30,6 +30,10 @@ func (incidentHandler *IncidentHandler) Create(w http.ResponseWriter, r *http.Re
 
 	incidentData, err := incidentHandler.repository.Create(r.Context(), &incident)
 
+	if err != nil {
+		respondWithError(w, err)
+	}
+
 	incidentResponse, _ := json.Marshal(incidentData)
 
 	if err == nil {
@@ -52,6 +56,10 @@ func (incidentHandler *IncidentHandler) Update(w http.ResponseWriter, r *http.Re
 	incident := models.Incident{}
 	json.NewDecoder(r.Body).Decode(&incident)
 	payload, err := incidentHandler.repository.Update(r.Context(), &incident)
+
+	if err != nil {
+		respondWithError(w, err)
+	}
 
 	incidentResponse, _ := json.Marshal(payload)
 
@@ -76,6 +84,10 @@ func (incidentHandler *IncidentHandler) GetByCity(w http.ResponseWriter, r *http
 
 	payload, err := incidentHandler.repository.GetByCityName(r.Context(), string(city))
 
+	if err != nil {
+		respondWithError(w, err)
+	}
+
 	incidentResponse, _ := json.Marshal(payload)
 
 	response := construct(incidentResponse, err)
@@ -88,6 +100,10 @@ func (incidentHandler *IncidentHandler) Delete(w http.ResponseWriter, r *http.Re
 	cityName := chi.URLParam(r, "city")
 
 	payload, err := incidentHandler.repository.Delete(r.Context(), int64(id))
+
+	if err != nil {
+		respondWithError(w, err)
+	}
 
 	if payload == true {
 		incidentData := models.Incident{

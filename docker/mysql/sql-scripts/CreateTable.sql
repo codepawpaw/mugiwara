@@ -1,16 +1,10 @@
 CREATE TABLE users (
     id int PRIMARY KEY AUTO_INCREMENT,
     name varchar(100) NOT NULL,
-    age varchar(10) NOT NULL,
-    sex varchar(20) NOT NULL
-);
-
-CREATE TABLE accounts (
-    id int PRIMARY KEY AUTO_INCREMENT,
-    username varchar(30) NOT NULL UNIQUE,
-    password varchar(30) NOT NULL,
-    user_id int NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES users(id)
+    displayName varchar(10) NOT NULL,
+    email varchar(20) NOT NULL UNIQUE,
+    idToken varchar(200),
+    photoUrl varchar(400)
 );
 
 CREATE TABLE incidents (

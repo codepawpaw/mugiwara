@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"encoding/json"
 	"net/http"
 
 	dto "../../dto"
@@ -43,4 +44,17 @@ func constructResponse(data []byte, err string) *dto.HttpResponse {
 	}
 
 	return response
+}
+
+func respondwithJSON(w http.ResponseWriter, code int, payload interface{}) {
+	response, _ := json.Marshal(payload)
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(code)
+	w.Write(response)
+}
+
+func respondWithError(response http.ResponseWriter, err error) {
+	jsonResponse := construct(nil, err)
+	respondwithJSON(response, jsonResponse.Status, jsonResponse)
 }

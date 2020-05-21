@@ -19,8 +19,8 @@ type JwtService struct {
 	tokenAuth *jwtAuth.JWTAuth
 }
 
-func (jwtService *JwtService) Encode(username string) string {
-	claim := jwt.MapClaims{"username": username}
+func (jwtService *JwtService) Encode(email string) string {
+	claim := jwt.MapClaims{"email": email}
 	_, token, _ := jwtService.tokenAuth.Encode(claim)
 
 	return token
